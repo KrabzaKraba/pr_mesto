@@ -184,56 +184,40 @@ const cardFormElement = cardPopup.querySelector('.popup__form')
 
 // Добавление новой карточки
 function handleCardFormSubmit(evt) {
-	evt.preventDefault()
-	const cardName = document.querySelector('.popup__input_type_card-name')
-	const cardURL = document.querySelector('.popup__input_type_first-url')
-	const submitButton = cardPopup.querySelector(
-		validationSettings.submitButtonSelector
-	)
+    evt.preventDefault();
+    const cardName = document.querySelector('.popup__input_type_card-name').value;
+    const cardURL = document.querySelector('.popup__input_type_first-url').value;
+    const submitButton = cardPopup.querySelector(validationSettings.submitButtonSelector);
 
-	if (!navigator.onLine) {
-		alert(
-			'Нет подключения к интернету. Проверьте соединение и повторите попытку.'
-		)
-		return
-	}
+    if (!navigator.onLine) {
+        alert('Нет подключения к интернету. Проверьте соединение и повторите попытку.');
+        return;
+    }
 
-	handleLoading(submitButton, true)
+    handleLoading(submitButton, true);
 
-	const image = new Image()
-
-	image.onload = () => {
-		addNewCard(cardName.value, cardURL.value)
-			.then(result => {
-				placesList.prepend(
-					createCard(
-						cardName.value,
-						cardURL.value,
-						result.likes.length,
-						result._id,
-						result.owner._id,
-						result.likes.map(like => like._id)
-					)
-				)
-				closeModal(cardPopup)
-				cardFormElement.reset()
-			})
-			.catch(err => {
-				console.log(err)
-				alert(
-					'Не удалось добавить картинку. Проверьте подключение к интернету или повторите попытку позже.'
-				)
-			})
-			.finally(() => {
-				handleLoading(submitButton, false)
-			})
-	}
-	image.onerror = () => {
-		alert('Ошибка загрузки картинки. Проверьте URL и повторите попытку.')
-		handleLoading(submitButton, false)
-	}
-
-	image.src = cardURL.value
+    addNewCard(cardName, cardURL)
+        .then(result => {
+            placesList.prepend(
+                createCard(
+                    cardName,
+                    cardURL,
+                    result.likes.length,
+                    result._id,
+                    result.owner._id,
+                    result.likes.map(like => like._id)
+                )
+            );
+            closeModal(cardPopup);
+            cardFormElement.reset();
+        })
+        .catch(err => {
+            console.log(err);
+            alert('Не удалось добавить картинку. Проверьте подключение к интернету или повторите попытку позже.');
+        })
+        .finally(() => {
+            handleLoading(submitButton, false);
+        });
 }
 
 cardFormElement.addEventListener('submit', handleCardFormSubmit)
